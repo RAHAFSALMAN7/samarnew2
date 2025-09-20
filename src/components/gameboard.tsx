@@ -1,5 +1,6 @@
 // src/components/Gameboard.tsx
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CardProps {
   image: string;
@@ -207,6 +208,18 @@ const Gameboard: React.FC<GameboardProps> = ({ players, section, onBack }) => {
     setCurrentPlayerIndex((currentPlayerIndex + 1) % players.length);
   };
 
+  // أزرار جاهزة للأنيميشن
+  const buttonStyle = {
+    padding: "10px 20px",
+    borderRadius: "12px",
+    border: "none",
+    backgroundColor: "#4f0000",
+    color: "#EBEBDF",
+    cursor: "pointer",
+    fontWeight: "bold",
+  };
+  const chooseButtonStyle = { ...buttonStyle, backgroundColor: "#006400" };
+
   return (
     <div
       style={{
@@ -266,47 +279,29 @@ const Gameboard: React.FC<GameboardProps> = ({ players, section, onBack }) => {
         الكروت المتبقية: {remainingCards.length}
       </p>
 
-      {/* عرض الكرت */}
-      {displayedCard ? (
-        <div style={{ textAlign: "center" }}>
-          <Card image={displayedCard} />
-
-          {displayedCard.includes("marawgha") && (
-            <div style={{ marginTop: "15px", display: "flex", gap: "10px", justifyContent: "center" }}>
-              <button
-                onClick={() => setShowExplainPopup(true)}
-                style={{
-                  padding: "10px 20px",
-                  borderRadius: "12px",
-                  border: "none",
-                  backgroundColor: "#4f0000",
-                  color: "#EBEBDF",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                الشرح
-              </button>
-              <button
-                onClick={() => setShowChoosePopup(true)}
-                style={{
-                  padding: "10px 20px",
-                  borderRadius: "12px",
-                  border: "none",
-                  backgroundColor: "#006400",
-                  color: "#EBEBDF",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                اختار
-              </button>
-            </div>
-          )}
-        </div>
-      ) : (
-        <p style={{ fontSize: "1.1rem", marginTop: "20px", color: "#002A4f" }}>اضغط التالي لسحب كرت 🎴</p>
-      )}
+      {/* عرض الكرت مع أنيميشن */}
+      <AnimatePresence mode="wait">
+        {displayedCard ? (
+          <motion.div
+            key={displayedCard}
+            initial={{ opacity: 0, y: -50, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.8 }}
+            transition={{ duration: 0.5 }}
+            style={{ textAlign: "center" }}
+          >
+            <Card image={displayedCard} />
+            {displayedCard.includes("marawgha") && (
+              <div style={{ marginTop: "15px", display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button onClick={() => setShowExplainPopup(true)} style={buttonStyle}>الشرح</button>
+                <button onClick={() => setShowChoosePopup(true)} style={chooseButtonStyle}>اختار</button>
+              </div>
+            )}
+          </motion.div>
+        ) : (
+          <p style={{ fontSize: "1.1rem", marginTop: "20px", color: "#002A4f" }}>اضغط التالي لسحب كرت 🎴</p>
+        )}
+      </AnimatePresence>
 
       {/* أزرار المراوغة والتالي */}
       <button
